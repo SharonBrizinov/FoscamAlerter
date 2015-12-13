@@ -4,7 +4,7 @@ Foscam's IP Camera WatchDog.
 This project aims to help people easily keep tracking of their Foscam camera logins, and to be notified when someone logs in to thier camera. 
 
   - Keep track of all of your camera's logins.
-  - Receive an email when someone logs in.
+  - Receive an email everytime there is something new in the log (login, motion detection, etc.)
 
 ### Inspiration
 [Foscam][df1] is a real player in the IP Camera industry and provides many IP based prodcuts indoor and outdoor. However, most of the products are using basic HTTP which means that all the connections to the camera are badly insecure. 

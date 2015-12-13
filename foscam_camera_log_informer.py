@@ -16,24 +16,31 @@ from datetime import datetime
 # Camera stuff
 USERNAME = "USERNAME" # Generic Username
 PASSWORD = "PASSWORD" # Generic Password
+
+# Configuration
+IP_HOME_PREFIX = "192.168.1."
+DATE_STRUCT = r"%a, %Y-%m-%d %H:%M:%S"
 LOG_URL = "/get_log.cgi?user=%s&pwd=%s"
-DEFULT_TIMOUT = 2         # 2 Seconds
-SLEEP_TIME_SEC = 10 * 60  # 10 Minutes
+DEFULT_TIMOUT = 2
+SLEEP_TIME_SEC = 10 * 60 # 10 Minutes
 
 # Full log file path
 FILE_LOG_PATH = r"foscam.log"
 
-
-
 # LOG PARSER
 LIST_ITEMS_REMOVE = [r"var log_text='", r"';"]
 SPLIT_ELEMENTS = "   "
+
+# Regular logins
 INDEX_DATE = 0
 INDEX_USERNAME = 1
+INDEX_COMMAND = 1
 INDEX_IP_ADDR = 2
 INDEX_INFO = 3
-IP_HOME_PREFIX = "192.168.1."
-DATE_STRUCT = r"%a, %Y-%m-%d %H:%M:%S"
+
+# Special commands
+STR_LOGIN = "login"
+STR_MOTION_DETECTED = "motion detect"
 
 
 # Mail stuff
@@ -96,7 +103,7 @@ def write_to_log(data_to_write, is_title = False, should_print = False):
 Single loging item representation
 '''
 class LoginItem():
-    def __init__(self, date, username, ip_addr, info, camID):
+    def __init__(self, date, command, username, ip_addr, info, camID):
 
         # Get real date
         if isinstance(date, (str, unicode)):
@@ -104,13 +111,19 @@ class LoginItem():
         else:
             self.date = date
 
+        self.command = command
         self.username = username
         self.ip_addr = ip_addr
         self.info = info
         self.camID = camID
 
     def __repr__(self):
-        return str(self.date) + ", CAM#" + str(self.camID) + ": " + self.username + " has connected from IP <" + get_ip_str_in_home(self.ip_addr,IP_HOME_PREFIX) + "> | " + self.info
+        # If we have command, and it is not login, print the command
+        if self.command != None and self.command != "" and self.command != STR_LOGIN:
+            return str(self.date) + ", CAM#" + str(self.camID) + ": " + self.command
+        # Login
+        else:
+            return str(self.date) + ", CAM#" + str(self.camID) + ": " + self.username + " has connected from IP <" + get_ip_str_in_home(self.ip_addr,IP_HOME_PREFIX) + "> | " + self.info
 '''
 Handles the whole log page
 '''
@@ -172,16 +185,28 @@ class WebpageLog():
             loggin_single_list = map(lambda x: x.lstrip(), loggin_single_list)
             loggin_single_list = filter(None, loggin_single_list)
             
+            # Special command
+            if len(loggin_single_list) == 2:
+                login_item = LoginItem(loggin_single_list[INDEX_DATE],
+                                loggin_single_list[INDEX_COMMAND],
+                                None,
+                                None,
+                                None,
+                                self.camID)
+            
             # Ugly fix: Sometime there is no user 
             if len(loggin_single_list) == 3:
-                loggin_single_list.insert(1, "???")
+                loggin_single_list.insert(INDEX_USERNAME, "???")
             
-            # Adding items to list
-            login_item = LoginItem(loggin_single_list[INDEX_DATE],
+            if len(loggin_single_list) == 4:
+                # Adding items to list
+                login_item = LoginItem(loggin_single_list[INDEX_DATE],
+                                    STR_LOGIN,
                                 loggin_single_list[INDEX_USERNAME],
                                 loggin_single_list[INDEX_IP_ADDR],
                                 loggin_single_list[INDEX_INFO],
                                 self.camID)
+
             login_items_list.append(login_item)
 
         return login_items_list
