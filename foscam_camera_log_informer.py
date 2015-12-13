@@ -37,11 +37,15 @@ DATE_STRUCT = r"%a, %Y-%m-%d %H:%M:%S"
 
 
 # Mail stuff
+EMAIL_SMTP_SERVER = "smtp.gmail.com"
+EMAIL_SMTP_PORT = 465  #Or 587
+
 EMAIL_FROM = "EMAIL_FROM@gmail.com"
 EMAIL_FROM_PASS = "PASSWORD"
 EMAIL_FROM_NICKNAME = "NICKNAME"
 EMAIL_TO = "EMAIL_TO@gmail.com"
 EMAIL_SUBJECT = "Camera #%s Alert"
+EMAIL_SUBJECT_GENERIC = "Camera Notification Alerts"
 EMAIL_BODY = "ALERT!\n%s"
 
 # Cameras
@@ -190,36 +194,51 @@ class WebpageLog():
 
 
 
-def send_email(camID, body):
+def send_email(body, camID = -1):
     '''
     Send mail - GMAIL
     '''
-    gmail_user = EMAIL_FROM
-    gmail_pwd = EMAIL_FROM_PASS
-    FROM = EMAIL_FROM_NICKNAME
-    TO = [EMAIL_TO] #must be a list
-    SUBJECT = EMAIL_SUBJECT % str(camID)
-    TEXT = EMAIL_BODY % body
+    # Sending mail
+    try:
+        gmail_user = EMAIL_FROM
+        gmail_pwd = EMAIL_FROM_PASS
+        FROM = EMAIL_FROM_NICKNAME
+        TO = [EMAIL_TO] #must be a list
 
-    # Prepare actual message
-    message = """\From: %s\nTo: %s\nSubject: %s\n\n%s
-    """ % (FROM, ", ".join(TO), SUBJECT, TEXT)
+        # Generic alert (system's up/down) vs. regular alert (camera X was accessed)
+        if camID == -1:
+            SUBJECT = EMAIL_SUBJECT_GENERIC
+        else:
+            SUBJECT = EMAIL_SUBJECT % str(camID)
 
-    server = smtplib.SMTP_SSL("smtp.gmail.com", 465) #OR 587
-    server.login(gmail_user, gmail_pwd)
-    server.ehlo()
-    #server.starttls()                
-    server.sendmail(FROM, TO, message)
-    #server.quit()
-    server.close()
+        TEXT = EMAIL_BODY % body
+
+        # Prepare actual message
+        message = """\From: %s\nTo: %s\nSubject: %s\n\n%s
+        """ % (FROM, ", ".join(TO), SUBJECT, TEXT)
+
+        # Send
+        server = smtplib.SMTP_SSL(EMAIL_SMTP_SERVER, EMAIL_SMTP_PORT)
+        server.login(gmail_user, gmail_pwd)
+        server.ehlo()
+        #server.starttls()                
+        server.sendmail(FROM, TO, message)
+        #server.quit()
+        server.close()
+
+    except Exception, e:
+        print "Could not send mail beaucse: <%s>" % str(e)
+        pass
 
 def main():
     '''
     Main funciton
     '''
     
-    
-    write_to_log("Started at %s" % datetime.fromtimestamp(time.time()), True, True)
+    # Starting...
+    started_str = "Started at %s" % datetime.fromtimestamp(time.time())
+    write_to_log(started_str, True, True)
+    send_email(started_str)
 
     # Add all cameras
     cameras_list = []
@@ -254,11 +273,7 @@ def main():
                         write_to_log(str(login), False, True)
 
                         # Sending mail
-                        try:
-                            send_email(login.camID,str(login))
-                        except Exception, e:
-                            print "Could not send mail beaucse: <%s>" % str(e)
-                            pass
+                        send_email(str(login), login.camID)
 
                         # Add to list
                         login_list.append(login)
@@ -272,8 +287,10 @@ def main():
     except (KeyboardInterrupt, SystemExit):
         print "Keyboard interupt !"
 
-
-    write_to_log("Closed at %s" % datetime.fromtimestamp(time.time()), True, True)
+    # Shutting down...
+    shutdown_str = "Closed at %s" % datetime.fromtimestamp(time.time())
+    write_to_log(shutdown_str, True, True)
+    send_email(shutdown_str)
     
 if __name__== "__main__":
     main()

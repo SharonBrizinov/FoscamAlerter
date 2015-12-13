@@ -46,6 +46,15 @@ $ python foscam_camera_log_informer.py
 ```
 
 
+### Log Example
+
+```sh
+Sun, 2015-01-13 13:31:35   USER       192.168.1.11      access
+Sun, 2015-01-13 13:32:52   USER       192.168.1.11      access
+Sun, 2015-01-13 13:34:15   USER       192.168.1.11      access
+```
+
+
 ***MIT License***
 
 
