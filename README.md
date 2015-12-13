@@ -7,8 +7,16 @@ This project aims to help people easily keep tracking of their Foscam camera log
   - Receive an email when someone logs in.
 
 ### Inspiration
-[Foscam][df1] is a real player in the IP Camera industry and provides many IP based prodcuts indoor and outdoor. However, most of the products are using basic HTTP connection and all the connections to the camera are badly insecure. 
-This means, everytime I login to my camera from outside of my home LAN, I expose myself to a potential hacker who could sniff the communication (e.g: MITM) and steal my camera's credentials. In addition there are a lot of security isseus that were discovered over the years with those cameras (example for some of those [CVEs][df2]).
+[Foscam][df1] is a real player in the IP Camera industry and provides many IP based prodcuts indoor and outdoor. However, most of the products are using basic HTTP which means that all the connections to the camera are badly insecure. 
+This means, everytime I login to my camera from outside of my home LAN, I expose myself to a potential hacker who could sniff the communication (e.g: MITM) and steal my camera's credentials. We could use some tricks to encrypte the connection at home using VPN solutions / installing SSH server at home and connect to the camera only from the local network through the SSH server. But it all requires some level of understanding and a lot of free time to deal with. Two things which most of the people are lacking of.
+In addition there are a lot of security isseus that were discovered over the years with those cameras (example for some of those [CVEs][df2]).
+
+### Damage control and preventive measures
+Assuming you can't secure your camera properly, the solution would be a watch-dog which informs you whenever someone logins to your camera. This way, you'll know in real time of potential intrusion and could prevent the attacker's next step by:
+ - Shutting down the camera.
+ - Update firmware.
+ - Change username & password.
+ - Change IP, DNS address, Port.
 
 ### Requirements
 - Python 2.7
