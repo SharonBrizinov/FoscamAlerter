@@ -22,6 +22,7 @@ Assuming you can't secure your camera properly, the solution would be a watch-do
 - Python 2.7
 - Foscam Camera, tested with:
     - Foscam FI8910W (11.37.2.X, 2.0.10.X)
+    
 ### Pre-Running
 Edit some of the variables before running.
 
