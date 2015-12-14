@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 '''
-Foscom Log Informer
+Foscam Log Informer
 Pyhton 2.7
 
 By: Sharon Brizinov
@@ -56,9 +56,9 @@ EMAIL_SUBJECT_GENERIC = "Camera Notification Alerts"
 EMAIL_BODY = "ALERT!\n%s"
 
 # Cameras
-CAMERA_LIST_TUPPLES = [("192.168.1.11", 80, USERNAME, PASSWORD),
-                        ("192.168.1.21", 80, USERNAME, PASSWORD),
-                        ("192.168.1.31", 80, USERNAME, PASSWORD)]
+CAMERA_LIST_TUPPLES = [("192.168.1.11", 81, USERNAME, PASSWORD),
+                        ("192.168.1.21", 82, USERNAME, PASSWORD),
+                        ("192.168.1.31", 83, USERNAME, PASSWORD)]
 
 '''
 Get whole http page
