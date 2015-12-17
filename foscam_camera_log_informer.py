@@ -45,7 +45,7 @@ STR_MOTION_DETECTED = "motion detect"
 
 # Mail stuff
 EMAIL_SMTP_SERVER = "smtp.gmail.com"
-EMAIL_SMTP_PORT = 465  #Or 587
+EMAIL_SMTP_PORT = 587 #465
 
 EMAIL_FROM = "EMAIL_FROM@gmail.com"
 EMAIL_FROM_PASS = "PASSWORD"
@@ -243,13 +243,12 @@ def send_email(body, camID = -1):
         """ % (FROM, ", ".join(TO), SUBJECT, TEXT)
 
         # Send
-        server = smtplib.SMTP_SSL(EMAIL_SMTP_SERVER, EMAIL_SMTP_PORT)
-        server.login(gmail_user, gmail_pwd)
+        server = smtplib.SMTP(EMAIL_SMTP_SERVER, EMAIL_SMTP_PORT)
         server.ehlo()
-        #server.starttls()                
+        server.starttls()
+        server.login(gmail_user, gmail_pwd)
         server.sendmail(FROM, TO, message)
-        #server.quit()
-        server.close()
+        server.quit()
 
     except Exception, e:
         print "Could not send mail beaucse: <%s>" % str(e)
